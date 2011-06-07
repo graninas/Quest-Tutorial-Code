@@ -15,21 +15,3 @@ describeLocation loc = case loc of
             Friend'sYard -> "You are standing in the front of the night garden behind the small wooden fence."
             Garden -> "You are in the garden. Garden looks very well: clean, tonsured, cool and wet."
             otherwise -> "Unknown location."
-			
-			
-data ArithmOperation = 
-	Plus Integer Integer
-	| Minus Integer Integer
-	| Prod Integer Integer
-	
-evalOp :: ArithmOperation -> Integer
-evalOp op = case op of
-				Plus x y -> x + y
-				Minus x y -> x - y
-				Prod x y -> x * y
-
-
-data IntegerList =
-				Empty
-				| Value Integer IntegerList
-				

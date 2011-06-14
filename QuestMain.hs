@@ -4,14 +4,14 @@ data Location =
 		| Friend'sYard
 		| Garden
 		| OtherRoom
-	deriving (Eq, Show)
+	deriving (Eq, Show, Read)
 
 data Direction =
 			  North
 			| South
 			| West
 			| East
-	deriving (Eq, Show)
+	deriving (Eq, Show, Read)
 
 data Action =
 		  Look
@@ -24,7 +24,7 @@ data Action =
 		| Save 
 		| Load 
 		| New
-    deriving (Eq, Show)
+    deriving (Eq, Show, Read)
 
 describeLocation :: Location -> String
 describeLocation loc = show loc ++ "\n" ++
@@ -34,17 +34,14 @@ describeLocation loc = show loc ++ "\n" ++
             Garden       -> "You are in the garden. Garden looks very well: clean, tonsured, cool and wet."
             otherwise    -> "No description available for location with name " ++ show loc ++ "."
 
+
 -- Обрабатываем действие.
 evalAction :: Action -> String
-evalAction act = case act of
-			Look -> "Action: Look!"
-			otherwise -> "Action does not supported yet."
+evalAction act = "Action: " ++ show act ++ "!"
 
--- Преобразуем строку в Action
+-- Преобразовываем строку в Action
 convertStringToAction :: String -> Action
-convertStringToAction str = case str of
-		"Look"    -> Look
-		otherwise -> Quit
+convertStringToAction str = read str
 
 -- Получем ввод с клавиатуры, конвертируем его в действие, вызываем обработчик, выводим результат.
 run = do

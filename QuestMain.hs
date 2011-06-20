@@ -43,7 +43,7 @@ evalAction act = "Action: " ++ show act ++ "!"
 convertStringToAction :: String -> Action
 convertStringToAction str = read str
 
--- Получем ввод с клавиатуры, конвертируем его в действие, вызываем обработчик, выводим результат.
+-- Получаем ввод с клавиатуры, конвертируем его в действие, вызываем обработчик, выводим результат.
 run = do
 		putStr "Enter command: "
 		x <- getLine

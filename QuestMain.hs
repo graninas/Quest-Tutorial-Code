@@ -1,30 +1,6 @@
+module Main where
 
-data Location =
-		  Home
-		| Friend'sYard
-		| Garden
-		| OtherRoom
-	deriving (Eq, Show, Read)
-
-data Direction =
-			  North
-			| South
-			| West
-			| East
-	deriving (Eq, Show, Read)
-
-data Action =
-		  Look
-		| Go
-		| Inventory
-		| Take
-		| Drop
-		| Investigate
-		| Quit 
-		| Save 
-		| Load 
-		| New
-    deriving (Eq, Show, Read)
+import Types
 
 describeLocation :: Location -> String
 describeLocation loc = show loc ++ "\n" ++
@@ -33,6 +9,16 @@ describeLocation loc = show loc ++ "\n" ++
             Friend'sYard -> "You are standing in the front of the night garden behind the small wooden fence."
             Garden       -> "You are in the garden. Garden looks very well: clean, tonsured, cool and wet."
             otherwise    -> "No description available for location with name " ++ show loc ++ "."
+
+			
+walk :: Location -> Direction -> Location
+walk Home North         = Garden
+walk Home South         = Friend'sYard
+walk Garden North       = Friend'sYard
+walk Garden South       = Home
+walk Friend'sYard North = Home
+walk Friend'sYard South = Garden
+walk curLoc _           = curLoc
 
 
 -- Обрабатываем действие.
@@ -44,7 +30,23 @@ convertStringToAction :: String -> Action
 convertStringToAction str = read str
 
 -- Получаем ввод с клавиатуры, конвертируем его в действие, вызываем обработчик, выводим результат.
-run = do
+run curLoc = do
+		putStrLn (describeLocation curLoc)
 		putStr "Enter command: "
 		x <- getLine
-		putStrLn ( evalAction (convertStringToAction x) )
+		case (convertStringToAction x) of
+			Quit          -> putStrLn "Be seen you..."
+			Look          -> do
+								putStrLn (describeLocation curLoc)
+								run curLoc
+			Go dir        -> do
+								putStrLn ("\nYou walking to " ++ show dir ++ ".\n")
+								run (walk curLoc dir)
+			convertResult -> do
+								putStrLn (evalAction convertResult)
+								putStrLn "End of turn.\n"
+								run curLoc
+
+main = do
+	putStrLn "Quest adventure on Haskell.\n"
+	run Home

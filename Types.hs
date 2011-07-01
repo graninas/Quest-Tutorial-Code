@@ -26,3 +26,10 @@ data Action =
 		| Load 
 		| New
     deriving (Eq, Show, Read)
+
+data Object = Table
+			| Umbrella
+			| Drawer
+			| Phone
+			| MailBox
+	deriving (Eq, Show, Read)

@@ -10,7 +10,7 @@ describeLocation loc = show loc ++ "\n" ++
             Garden       -> "You are in the garden. Garden looks very well: clean, tonsured, cool and wet."
             otherwise    -> "No description available for location with name " ++ show loc ++ "."
 
-			
+
 walk :: Location -> Direction -> Location
 walk Home North         = Garden
 walk Home South         = Friend'sYard
@@ -20,7 +20,30 @@ walk Friend'sYard North = Home
 walk Friend'sYard South = Garden
 walk curLoc _           = curLoc
 
+locationObjects :: Location -> [Object]
+locationObjects Home = [Umbrella, Drawer, Phone]
+locationObjects _    = []
 
+describeObject :: Object -> String
+describeObject Umbrella = "Nice red mechanic Umbrella."
+describeObject Table    = "Good wooden table with drawer."
+describeObject Phone    = "The Phone has some voice messages for you."
+describeObject obj      = "There is nothing special about " ++ show obj
+
+describeLocationObjects :: Location -> String
+describeLocationObjects loc = let 
+								describeLocationObjects' [] = ""
+								describeLocationObjects' (o:os) = "\n" ++ describeObject o ++ describeLocationObjects' os
+							  in
+									describeLocationObjects' (locationObjects loc)
+
+enumerateObjects :: [Object] -> String
+enumerateObjects [] = ""
+enumerateObjects objects = "\n  There are some objects here: [" ++ enumerateObjects' objects
+	where
+		enumerateObjects' (o:[]) = show o ++ "]"
+		enumerateObjects' (o:os) = show o ++ ", " ++ enumerateObjects' os
+									
 -- Обрабатываем действие.
 evalAction :: Action -> String
 evalAction act = "Action: " ++ show act ++ "!"
@@ -31,13 +54,16 @@ convertStringToAction str = read str
 
 -- Получаем ввод с клавиатуры, конвертируем его в действие, вызываем обработчик, выводим результат.
 run curLoc = do
-		putStrLn (describeLocation curLoc)
+		let locDescr = describeLocation curLoc
+		let objEnum  = enumerateObjects (locationObjects curLoc)
+		let locAndObjDescr = locDescr ++ objEnum
+		putStrLn locAndObjDescr
 		putStr "Enter command: "
 		x <- getLine
 		case (convertStringToAction x) of
 			Quit          -> putStrLn "Be seen you..."
 			Look          -> do
-								putStrLn (describeLocation curLoc)
+								putStrLn locAndObjDescr
 								run curLoc
 			Go dir        -> do
 								putStrLn ("\nYou walking to " ++ show dir ++ ".\n")

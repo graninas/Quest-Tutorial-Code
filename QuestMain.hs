@@ -20,30 +20,24 @@ walk Friend'sYard North = Home
 walk Friend'sYard South = Garden
 walk curLoc _           = curLoc
 
+isVisible :: Object -> [Object] -> Bool
+isVisible obj objects = obj `elem` objects
+
 locationObjects :: Location -> [Object]
-locationObjects Home = [Umbrella, Drawer, Phone]
+locationObjects Home = [Umbrella, Drawer, Phone, Table]
 locationObjects _    = []
 
 describeObject :: Object -> String
 describeObject Umbrella = "Nice red mechanic Umbrella."
 describeObject Table    = "Good wooden table with drawer."
 describeObject Phone    = "The Phone has some voice messages for you."
+describeObject MailBox  = "The MailBox is closed."
 describeObject obj      = "There is nothing special about " ++ show obj
-
-describeLocationObjects :: Location -> String
-describeLocationObjects loc = let 
-								describeLocationObjects' [] = ""
-								describeLocationObjects' (o:os) = "\n" ++ describeObject o ++ describeLocationObjects' os
-							  in
-									describeLocationObjects' (locationObjects loc)
 
 enumerateObjects :: [Object] -> String
 enumerateObjects [] = ""
-enumerateObjects objects = "\n  There are some objects here: [" ++ enumerateObjects' objects
-	where
-		enumerateObjects' (o:[]) = show o ++ "]"
-		enumerateObjects' (o:os) = show o ++ ", " ++ enumerateObjects' os
-									
+enumerateObjects objects = "\n  There are some objects here: " ++ show objects
+
 -- Обрабатываем действие.
 evalAction :: Action -> String
 evalAction act = "Action: " ++ show act ++ "!"
@@ -54,16 +48,22 @@ convertStringToAction str = read str
 
 -- Получаем ввод с клавиатуры, конвертируем его в действие, вызываем обработчик, выводим результат.
 run curLoc = do
+		let locObjects = locationObjects curLoc
 		let locDescr = describeLocation curLoc
-		let objEnum  = enumerateObjects (locationObjects curLoc)
-		let locAndObjDescr = locDescr ++ objEnum
-		putStrLn locAndObjDescr
+		let objectsDescr = enumerateObjects locObjects
+		let fullDescr = locDescr ++ objectsDescr
+		putStrLn fullDescr
 		putStr "Enter command: "
 		x <- getLine
 		case (convertStringToAction x) of
+			Investigate obj -> do
+								if (isVisible obj locObjects)
+									then putStrLn (describeObject obj)
+									else putStrLn ("You don't see any " ++ show obj ++ " here.")
+								run curLoc
 			Quit          -> putStrLn "Be seen you..."
 			Look          -> do
-								putStrLn locAndObjDescr
+								putStrLn fullDescr
 								run curLoc
 			Go dir        -> do
 								putStrLn ("\nYou walking to " ++ show dir ++ ".\n")

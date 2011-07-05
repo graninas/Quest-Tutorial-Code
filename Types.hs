@@ -20,7 +20,7 @@ data Action =
 		| Inventory
 		| Take
 		| Drop
-		| Investigate
+		| Investigate Object
 		| Quit 
 		| Save 
 		| Load 
@@ -32,4 +32,5 @@ data Object = Table
 			| Drawer
 			| Phone
 			| MailBox
+			| Friend'sKey
 	deriving (Eq, Show, Read)
